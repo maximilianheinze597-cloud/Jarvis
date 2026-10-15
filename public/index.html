@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S.</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="hud">
+    <header class="topbar">
+      <div class="brand">
+        <span class="dot"></span>
+        <span class="title">J.A.R.V.I.S.</span>
+        <span class="subtitle">Just A Rather Very Intelligent System</span>
+      </div>
+      <div class="status">
+        <span id="connStatus" class="pill">OFFLINE MODE</span>
+        <span id="micStatus" class="pill">MIC: IDLE</span>
+      </div>
+    </header>
+
+    <main class="grid">
+      <aside class="panel left">
+        <h2>SYSTEM STATUS</h2>
+        <ul id="statusList">
+          <li><span>Core</span><span class="ok">ONLINE</span></li>
+          <li><span>Arc Reactor</span><span class="ok">STABLE</span></li>
+          <li><span>Voice</span><span id="voiceState">READY</span></li>
+          <li><span>Network</span><span id="netState">CHECKING</span></li>
+          <li><span>Power</span><span>98%</span></li>
+        </ul>
+        <div class="reactor-wrap">
+          <div class="reactor">
+            <div class="ring r1"></div>
+            <div class="ring r2"></div>
+            <div class="ring r3"></div>
+            <div class="core"></div>
+          </div>
+          <p class="reactor-label">ARC REACTOR</p>
+        </div>
+      </aside>
+
+      <section class="panel center">
+        <div class="suit-viewer" id="suitViewer">
+          <div class="suit-toolbar">
+            <span>SUIT VISUALIZER</span>
+            <div class="suit-btns">
+              <button data-suit="zoom">Zoom Helm</button>
+              <button data-suit="open">Klappe öffnen</button>
+              <button data-suit="light">Beleuchten</button>
+              <button data-suit="reset">Reset</button>
+            </div>
+          </div>
+          <div class="helmet-stage">
+            <div class="helmet" id="helmet">
+              <div class="faceplate" id="faceplate"></div>
+              <div class="eyes" id="eyes"></div>
+              <div class="jaw"></div>
+              <div class="hud-lines"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chat-header">
+          <h2>COMMUNICATION LOG</h2>
+          <div class="controls">
+            <button id="listenBtn" class="btn primary">🎤 Listen</button>
+            <button id="speakToggle" class="btn">🔊 Voice: ON</button>
+            <button id="clearBtn" class="btn">🧹 Clear</button>
+          </div>
+        </div>
+        <div id="chat" class="chat"></div>
+        <form id="inputForm" class="inputbar">
+          <input id="input" type="text" placeholder="Type a command or say 'Jarvis'..." autocomplete="off" />
+          <button type="submit" class="btn primary">Send</button>
+        </form>
+        <p class="hint">Wake word: say <strong>"Jarvis"</strong> then your command. Push-to-talk with the button or Space.</p>
+      </section>
+
+      <aside class="panel right">
+        <h2>QUICK COMMANDS</h2>
+        <div class="quick">
+          <button data-cmd="Status report">Status</button>
+          <button data-cmd="What time is it?">Time</button>
+          <button data-cmd="Tell me a joke">Joke</button>
+          <button data-cmd="Activate suit mode">Suit mode</button>
+          <button data-cmd="Run diagnostics">Diagnostics</button>
+          <button data-cmd="Shutdown non-essential systems">Shutdown</button>
+        </div>
+        <h2>VOICE SETTINGS</h2>
+        <label>Voice
+          <select id="voiceSelect"></select>
+        </label>
+        <label>Rate <input id="rate" type="range" min="0.5" max="1.5" step="0.1" value="1" /></label>
+        <label>Pitch <input id="pitch" type="range" min="0.5" max="1.5" step="0.1" value="1" /></label>
+      </aside>
+    </main>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
