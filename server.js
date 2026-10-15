@@ -71,7 +71,9 @@ app.post('/api/chat', async (req, res) => {
     const reply = data?.choices?.[0]?.message?.content?.trim() || 'I am afraid I have no response, Sir.';
     res.json({ reply, source: 'openai', model });
   } catch (err) {
-    res.status(500).json({ error: 'Server error', detail: String(err) });
+    // Graceful fallback if the upstream LLM is unreachable
+    const last = (messages.filter(m => m.role === 'user').pop() || {}).content || '';
+    return res.json({ reply: offlineReply(last) + ' (LLM unreachable, offline fallback.)', source: 'offline-fallback' });
   }
 });
 
