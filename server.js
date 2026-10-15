@@ -20,6 +20,8 @@ app.get('/api/health', (req, res) => {
     ok: true,
     hasOpenAIKey: Boolean(process.env.OPENAI_API_KEY),
     model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    hasElevenLabsKey: Boolean(process.env.ELEVENLABS_API_KEY),
+    elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID || null,
     time: new Date().toISOString()
   });
 });
@@ -85,6 +87,45 @@ function offlineReply(input) {
   if (q.includes('shutdown') || q.includes('herunterfahren')) return 'Shutting down non-essential systems. Good night, Sir.';
   return 'I am running in offline mode, Sir. Provide an OpenAI API key in .env for full intelligence. In the meantime: ' + input;
 }
+
+
+// Text-to-Speech via ElevenLabs (optional)
+app.post('/api/tts', async (req, res) => {
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  if (!apiKey) {
+    return res.status(503).json({ error: 'ElevenLabs not configured' });
+  }
+  const text = String((req.body || {}).text || '').trim();
+  if (!text) return res.status(400).json({ error: 'text required' });
+
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
+  const model = process.env.ELEVENLABS_MODEL || 'eleven_multilingual_v2';
+
+  try {
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: {
+        'xi-api-key': apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'audio/mpeg'
+      },
+      body: JSON.stringify({
+        text,
+        model_id: model,
+        voice_settings: { stability: 0.4, similarity_boost: 0.75, style: 0.3, use_speaker_boost: true }
+      })
+    });
+    if (!r.ok) {
+      const detail = await r.text();
+      return res.status(r.status).json({ error: 'ElevenLabs error', detail });
+    }
+    res.setHeader('Content-Type', 'audio/mpeg');
+    const buf = Buffer.from(await r.arrayBuffer());
+    res.send(buf);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error', detail: String(err) });
+  }
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

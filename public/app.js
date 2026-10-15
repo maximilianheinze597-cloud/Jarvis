@@ -18,6 +18,8 @@ let voiceEnabled = true;
 let listening = false;
 let recognition = null;
 let selectedVoice = null;
+let useElevenLabs = false;
+let currentAudio = null;
 let finalTranscript = '';
 
 // ---------- Chat UI ----------
@@ -86,7 +88,30 @@ voiceSelect.addEventListener('change', () => {
   selectedVoice = voices[parseInt(voiceSelect.value, 10)];
 });
 
-function speak(text) {
+async function speak(text) {
+  // Try ElevenLabs first if configured
+  if (useElevenLabs) {
+    try {
+      if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+      const res = await fetch('/api/tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        currentAudio = audio;
+        audio.play();
+        audio.onended = () => URL.revokeObjectURL(url);
+        return;
+      }
+    } catch (e) {
+      console.warn('ElevenLabs TTS failed, falling back to browser TTS', e);
+    }
+  }
+  // Browser TTS fallback
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
@@ -206,6 +231,11 @@ fetch('/api/health').then(r => r.json()).then(d => {
   } else {
     connStatus.textContent = 'OFFLINE MODE';
     connStatus.style.color = '#ff8a3d';
+  }
+  if (d.hasElevenLabsKey) {
+    useElevenLabs = true;
+    const v = document.getElementById('voiceState');
+    if (v) v.textContent = 'ELEVENLABS';
   }
 }).catch(() => { netState.textContent = 'OFFLINE'; });
 
