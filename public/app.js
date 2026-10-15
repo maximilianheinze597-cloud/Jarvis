@@ -35,8 +35,43 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+// ---------- Suit visualizer ----------
+const helmetEl = document.getElementById('helmet');
+const faceplateEl = document.getElementById('faceplate');
+const eyesEl = document.getElementById('eyes');
+
+function suitAction(action) {
+  if (!helmetEl) return;
+  if (action === 'zoom') {
+    helmetEl.classList.add('zoomed');
+  } else if (action === 'open') {
+    faceplateEl.classList.add('open');
+  } else if (action === 'close') {
+    faceplateEl.classList.remove('open');
+  } else if (action === 'light') {
+    eyesEl.classList.add('lit');
+    setTimeout(() => eyesEl.classList.remove('lit'), 4000);
+  } else if (action === 'reset') {
+    helmetEl.classList.remove('zoomed');
+    faceplateEl.classList.remove('open');
+    eyesEl.classList.remove('lit');
+  }
+}
+
+function detectSuitCommand(text) {
+  const q = text.toLowerCase();
+  let handled = false;
+  if (q.includes('zoom') || q.includes('reinzoom') || q.includes('helm')) { suitAction('zoom'); handled = true; }
+  if (q.includes('klappe') && (q.includes('öff') || q.includes('open'))) { suitAction('open'); handled = true; }
+  if (q.includes('schließen') || q.includes('close')) { suitAction('close'); handled = true; }
+  if (q.includes('beleucht') || q.includes('light') || q.includes('licht') || q.includes('illum')) { suitAction('light'); handled = true; }
+  if (q.includes('reset') || q.includes('zurücksetzen')) { suitAction('reset'); handled = true; }
+  return handled;
+}
+
 async function sendToJarvis(text) {
   if (!text.trim()) return;
+  detectSuitCommand(text);
   addMsg('user', text);
   messages.push({ role: 'user', content: text });
   const typing = document.createElement('div');
@@ -220,6 +255,13 @@ speakToggle.addEventListener('click', () => {
 // Quick commands
 document.querySelectorAll('.quick button').forEach(b => {
   b.addEventListener('click', () => sendToJarvis(b.dataset.cmd));
+});
+document.querySelectorAll('[data-suit]').forEach(b => {
+  b.addEventListener('click', () => {
+    suitAction(b.dataset.suit);
+    const labels = { zoom:'Zooming into helmet, Sir.', open:'Opening faceplate, Sir.', light:'Illuminating, Sir.', reset:'Resetting view, Sir.' };
+    sendToJarvis(labels[b.dataset.suit] || 'Suit command.');
+  });
 });
 
 // ---------- Health check ----------

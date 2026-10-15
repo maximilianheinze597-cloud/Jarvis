@@ -84,3 +84,20 @@ html, body { margin: 0; padding: 0; height: 100%; background: radial-gradient(el
   .grid { grid-template-columns: 1fr; }
   .left, .right { display: none; }
 }
+
+/* Suit visualizer */
+.suit-viewer { border: 1px solid rgba(57,213,255,0.2); border-radius: 8px; padding: 8px; margin-bottom: 8px; background: rgba(0,0,0,0.25); }
+.suit-toolbar { display: flex; justify-content: space-between; align-items: center; font-size: 11px; letter-spacing: 2px; color: var(--cyan); margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+.suit-btns { display: flex; gap: 4px; flex-wrap: wrap; }
+.suit-btns button { background: rgba(57,213,255,0.08); border: 1px solid rgba(57,213,255,0.25); color: var(--text); padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+.suit-btns button:hover { background: rgba(57,213,255,0.18); }
+.helmet-stage { height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.helmet { position: relative; width: 110px; height: 130px; transition: transform 0.6s ease; transform-origin: center; }
+.helmet.zoomed { transform: scale(1.9); }
+.faceplate { position: absolute; top: 8px; left: 10px; width: 90px; height: 60px; background: linear-gradient(180deg, #b7c6d9 0%, #6b7a8f 100%); border: 2px solid var(--cyan); border-radius: 40px 40px 20px 20px; transition: transform 0.6s ease; transform-origin: top center; clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%); }
+.faceplate.open { transform: rotateX(-45deg) translateY(-18px); }
+.eyes { position: absolute; top: 34px; left: 24px; width: 62px; height: 12px; display: flex; justify-content: space-between; }
+.eyes::before, .eyes::after { content: ''; width: 24px; height: 8px; background: #1a1a1a; border: 1px solid var(--cyan); border-radius: 4px; transition: all 0.4s ease; }
+.eyes.lit::before, .eyes.lit::after { background: var(--cyan); box-shadow: 0 0 16px var(--cyan), 0 0 32px var(--cyan); }
+.jaw { position: absolute; bottom: 8px; left: 20px; width: 70px; height: 40px; background: linear-gradient(180deg, #8a99ad 0%, #4a5566 100%); border: 2px solid var(--cyan); border-radius: 10px 10px 30px 30px; }
+.hud-lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 6px, rgba(57,213,255,0.08) 6px 7px); pointer-events: none; }
